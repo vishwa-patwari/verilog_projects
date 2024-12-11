@@ -40,20 +40,20 @@ Features
 Finite State Machine (FSM):
 The washing machine is modeled as an FSM with six states:
 
-IDLE: Initial state before the washing process starts.
-FILL: Water filling stage.
-WASH: Washing stage.
-RINSE: Rinsing stage.
-SPIN: Spinning stage.
-DONE: Completion stage, returning to IDLE.
+1.IDLE: Initial state before the washing process starts.
+2.FILL: Water filling stage.
+3.WASH: Washing stage.
+4.RINSE: Rinsing stage.
+5.SPIN: Spinning stage.
+6.DONE: Completion stage, returning to IDLE.
 Parameter-Driven Timing:
 Each stage has a predefined duration (configurable via parameters):
 
-Fill: 3 cycles
-Wash: 4 cycles
-Rinse: 4 cycles
-Spin: 4 cycles
-Supply Handling:
+1.Fill: 3 cycles
+2.Wash: 4 cycles
+3.Rinse: 4 cycles
+3.Spin: 4 cycles
+5.Supply Handling:
 If the power supply is interrupted (supply=0), the machine retains its current state and resumes correctly once power is restored.
 
 Design Details
