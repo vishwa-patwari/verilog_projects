@@ -1,4 +1,4 @@
-### Traffic Light Controller
+### 1) Traffic Light Controller
 
 This project implements a traffic light controller for a four-way intersection using a finite state machine (FSM) model. The controller operates in a simulated environment, where the traffic lights switch states based on a timer, ensuring smooth and safe traffic flow.
 
@@ -26,9 +26,75 @@ The state transitions are governed by these timers, ensuring each state persists
 - Simulation of traffic light systems for educational or demonstration purposes.
 - Can be extended with sensor inputs for real-world implementation.
 
+### 2) Washing Machine Simulation in Verilog
+Overview
+This project simulates the operation of a washing machine using Verilog. The washing machine transitions through various stages—Idle, Fill, Wash, Rinse, Spin, and Done—based on a clock-driven state machine. The design is robust, handling scenarios like supply interruptions and ensuring proper resumption of operation after the supply is restored.
+
+The simulation demonstrates the following:
+
+State Machine Logic: Transitioning between washing machine stages based on timers and conditions.
+Timer-Based Control: Ensures that each stage runs for a specific time duration.
+Supply Interruption Handling: Retains the current state and timer values when the power supply is turned off.
+Reset Mechanism: Ensures the washing machine resets to an idle state as needed.
+Features
+Finite State Machine (FSM):
+The washing machine is modeled as an FSM with six states:
+
+IDLE: Initial state before the washing process starts.
+FILL: Water filling stage.
+WASH: Washing stage.
+RINSE: Rinsing stage.
+SPIN: Spinning stage.
+DONE: Completion stage, returning to IDLE.
+Parameter-Driven Timing:
+Each stage has a predefined duration (configurable via parameters):
+
+Fill: 3 cycles
+Wash: 4 cycles
+Rinse: 4 cycles
+Spin: 4 cycles
+Supply Handling:
+If the power supply is interrupted (supply=0), the machine retains its current state and resumes correctly once power is restored.
+
+Design Details
+Verilog Module:
+The module washing_machine includes:
+
+Inputs:
+
+clk: Clock signal.
+rst: Reset signal.
+cycle: Start cycle signal.
+supply: Power supply signal.
+Output:
+
+stage: Current stage of the washing process, represented as a 3-bit binary code.
+Parameters:
+Configurable timing for each stage.
+
+State Transitions:
+The washing machine starts in the IDLE state.
+On receiving the cycle signal, it transitions to FILL, then sequentially through WASH, RINSE, SPIN, and finally DONE.
+Each stage runs for a fixed number of cycles before transitioning.
+Simulation
+The testbench (washing_machine_tb.v) verifies the following scenarios:
+
+Normal Operation:
+
+The machine transitions through all stages without interruptions.
+Supply Interruption:
+
+Tests the machine's ability to retain state and timer values during a power outage and resume properly when the supply is restored.
+Reset Handling:
+
+Ensures the machine resets to IDLE when the rst signal is asserted.
+Tools Used
+Simulation Tools: ModelSim, Vivado, or any Verilog simulation environment.
+Waveform Viewing: GTKWave for analyzing signal transitions.
+
 #### How to Run
 1. Clone the repository.
-2. Use any Verilog simulator (e.g., ModelSim, Vivado, or iverilog) to run the `traffic_light_tb.v` testbench.
+2. Use any Verilog simulator (e.g., ModelSim, Vivado, or iverilog).
 3. Observe the state transitions and output signals in the waveform or console output.
 
 
