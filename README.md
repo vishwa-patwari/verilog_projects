@@ -96,6 +96,58 @@ The module `washing_machine` includes the following:
 - **Supply Interruption**: Tests the machine's ability to retain state and timer values during a power outage and resume properly when the supply is restored.
 - **Reset Handling**: Ensures the machine resets to **IDLE** when the `rst` signal is asserted.
 
+## 3)UART Transmitter Design in Verilog
+
+This repository contains a Verilog implementation of a Universal Asynchronous Receiver-Transmitter (UART) Transmitter module, along with its corresponding testbench. The UART Transmitter module sends data byte-by-byte over a serial connection. The module supports the following features:
+
+- **Idle state** when no transmission is occurring.
+- **Start bit** signaling to begin transmission.
+- **Data bit transmission** in sequence (LSB first).
+- **Stop bit** signaling to mark the end of the transmission.
+- **Transmission done** signaling once the data is fully transmitted.
+
+## Features
+
+- Configurable clock period for controlling baud rate via `CLOCKS_PER_BIT` parameter.
+- Supports an 8-bit data transmission protocol.
+- Includes a testbench (`UART_TB`) for simulation and verification.
+- Data transmission format: **Start bit, 8 data bits, Stop bit**.
+
+## Modules
+
+### UART_TX
+The main UART transmitter module with the following ports:
+
+#### Inputs:
+- **`reset`**: Active-low reset signal to initialize the transmitter.
+- **`clock`**: Clock signal.
+- **`data_valid`**: Indicates when valid data is available for transmission.
+- **`data_in`**: 8-bit data to be transmitted.
+
+#### Outputs:
+- **`transmitting`**: High when the transmitter is active.
+- **`serial_out`**: The serial output, which carries the data being transmitted.
+- **`transmission_done`**: High once the transmission is complete.
+
+### UART_TB
+Testbench for the `UART_TX` module to simulate and verify its behavior.
+
+#### Testbench Operation:
+1. Initializes the system by applying the reset signal.
+2. Sets `data_valid` to 1 and provides a sample byte (`8'h3F`) for transmission after reset is deasserted.
+3. Waits for the transmission to complete and checks if the `transmission_done` signal is asserted, indicating a successful transmission.
+
+## Simulation
+
+### Running the Testbench
+1. Compile the Verilog files and the testbench using a simulator (e.g., **ModelSim**).
+2. Run the simulation to observe the UART transmitter's behavior.
+3. Verify the output in the waveform viewer or console.
+
+#### Expected Console Output:
+- **Successful transmission**:Test Passed - Byte 0x3F Transmitted Successfully
+
+
 #### How to Run
 1. Clone the repository.
 2. Use any Verilog simulator (e.g., ModelSim, Vivado, or iverilog).
