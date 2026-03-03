@@ -290,6 +290,200 @@ verilator --trace --binary crc_calculator_tb.v crc_calculator.v --top crc_calcul
 
 ---
 
+# 5) Asynchronous FIFO (Verilog RTL)
+
+## 📌 Overview
+
+This project implements a **parameterized Asynchronous FIFO (First-In First-Out)** in Verilog.
+
+The FIFO safely transfers data between two different clock domains:
+
+* `wr_clk` → Write domain
+* `rd_clk` → Read domain
+
+It uses:
+
+* Binary write/read pointers
+* Gray code conversion
+* Two-stage synchronizers
+* Proper full and empty detection
+
+This is a classic CDC (Clock Domain Crossing) safe FIFO architecture used in ASIC and FPGA designs.
+
+---
+
+## ✨ Features
+
+* Parameterized data width (`WIDTH`)
+* Parameterized depth (`DEPTH`)
+* Separate write and read clocks
+* Gray code pointer synchronization
+* Double-flop synchronizers for CDC safety
+* Full and empty flag generation
+* Active-low asynchronous reset (`rst_n`)
+* Fully synthesizable
+
+---
+
+## 📂 Parameters
+
+| Parameter | Description   | Default |
+| --------- | ------------- | ------- |
+| `WIDTH`   | Data width    | 32      |
+| `DEPTH`   | FIFO depth    | 8       |
+| `ADDR`    | Pointer width | 4       |
+
+> Note: `ADDR` should be `log2(DEPTH) + 1` for correct full detection.
+
+---
+
+## 🔌 Port Description
+
+| Port              | Direction | Description      |
+| ----------------- | --------- | ---------------- |
+| `wr_clk`          | Input     | Write clock      |
+| `rd_clk`          | Input     | Read clock       |
+| `rst_n`           | Input     | Active-low reset |
+| `wr`              | Input     | Write enable     |
+| `rd`              | Input     | Read enable      |
+| `din[WIDTH-1:0]`  | Input     | Data input       |
+| `dout[WIDTH-1:0]` | Output    | Data output      |
+| `full`            | Output    | FIFO full flag   |
+| `empty`           | Output    | FIFO empty flag  |
+
+---
+
+## 🧠 Architecture Explanation
+
+### 1️⃣ Write Logic (Write Clock Domain)
+
+* Writes data into memory when:
+
+  ```
+  wr && !full
+  ```
+* Increments binary write pointer (`wr_ptr_b`)
+* Converts binary pointer to Gray code (`wr_ptr_g`)
+
+---
+
+### 2️⃣ Read Logic (Read Clock Domain)
+
+* Reads data when:
+
+  ```
+  rd && !empty
+  ```
+* Increments binary read pointer (`rd_ptr_b`)
+* Converts binary pointer to Gray code (`rd_ptr_g`)
+
+---
+
+### 3️⃣ Gray Code Conversion
+
+Binary to Gray conversion:
+
+```verilog
+gray = binary ^ (binary >> 1);
+```
+
+Gray code ensures **only one bit changes at a time**, which reduces metastability risk during clock domain crossing.
+
+---
+
+### 4️⃣ Pointer Synchronization
+
+Each Gray pointer is passed through **two flip-flops** before being used in the opposite clock domain:
+
+* `wr_ptr_g` → synchronized into read domain
+* `rd_ptr_g` → synchronized into write domain
+
+This prevents metastability from affecting FIFO control logic.
+
+---
+
+## 🔍 Empty Condition
+
+FIFO is empty when:
+
+```verilog
+empty = (wr_ptr_g_s2 == rd_ptr_g);
+```
+
+Meaning:
+
+* Both pointers are equal
+* No unread data present
+
+---
+
+## 🔍 Full Condition
+
+FIFO is full when:
+
+```verilog
+full = (wr_ptr_g == {~rd_ptr_g_s2[ADDR-1:ADDR-2], rd_ptr_g_s2[ADDR-3:0]});
+```
+
+Meaning:
+
+* Write pointer catches up to read pointer
+* MSBs inverted to detect wrap-around condition
+
+This method distinguishes between:
+
+* Full state
+* Empty state
+
+Even though lower bits are equal.
+
+---
+
+## 🗂 Memory Structure
+
+```verilog
+reg [WIDTH-1:0] mem [DEPTH-1:0];
+```
+
+Data is stored using:
+
+```verilog
+mem[wr_ptr_b[2:0]] <= din;
+```
+
+Indexing uses lower bits of pointer.
+
+---
+
+## ⚠️ Important Design Notes
+
+* FIFO depth should be power of 2
+* `ADDR` must be correctly chosen
+* Double synchronizers are mandatory for CDC safety
+* Gray code ensures safe multi-bit crossing
+* Reset must initialize both domains correctly
+
+---
+
+## 🚀 Example Configuration
+
+```verilog
+parameter WIDTH = 32;
+parameter DEPTH = 8;
+parameter ADDR  = 4;
+```
+
+## 🔮 Future Improvements
+
+* Add almost_full flag
+* Add almost_empty flag
+* Add parameterized synchronizer depth
+* Add formal verification
+* Add assertion-based verification
+* Add testbench with different clock frequencies
+
+---
+
 ## 👨‍💻 Author
 
 Vishwa Patwari
