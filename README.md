@@ -153,5 +153,152 @@ Testbench for the `UART_TX` module to simulate and verify its behavior.
 2. Use any Verilog simulator (e.g., ModelSim, Vivado, or iverilog).
 3. Observe the state transitions and output signals in the waveform or console output.
 
+Here is a clean and professional **README.md** content you can directly use for your GitHub project.
+
+---
+
+# 4) CRC Calculator (Parameterized Verilog)
+
+## 📌 Overview
+
+This project implements a **parameterized CRC (Cyclic Redundancy Check) calculator** in Verilog.
+
+The design computes the CRC value for an `N-bit` input data word using a configurable polynomial.
+
+The module processes **1 bit per clock cycle** and asserts a `done` signal once CRC calculation is complete.
+
+---
+
+## ✨ Features
+
+* Parameterized data width (`N`)
+* Configurable CRC polynomial (`POLY`)
+* Configurable initial value (`INIT`)
+* Serial bit-by-bit CRC computation
+* One-cycle `done` pulse when calculation completes
+* Edge detection on `valid` input
+* Fully synthesizable RTL
+
+---
+
+## 📂 Module Parameters
+
+| Parameter | Description       | Default |
+| --------- | ----------------- | ------- |
+| `N`       | Data width        | 8       |
+| `POLY`    | CRC polynomial    | 8'h07   |
+| `INIT`    | Initial CRC value | 8'h00   |
+
+---
+
+## 🔌 Port Description
+
+| Port             | Direction | Description                                |
+| ---------------- | --------- | ------------------------------------------ |
+| `clk`            | Input     | System clock                               |
+| `rst`            | Input     | Synchronous reset (active high)            |
+| `valid`          | Input     | Starts CRC computation                     |
+| `data_in[N-1:0]` | Input     | Input data word                            |
+| `crc_out[N-1:0]` | Output    | Final CRC result                           |
+| `done`           | Output    | High for one clock cycle when CRC is ready |
+
+---
+
+## ⚙️ Working Principle
+
+1. When `valid` is asserted (and module is not busy):
+
+   * Input data is loaded into `data_reg`
+   * CRC register is initialized to `INIT`
+   * Bit counter is reset
+   * `busy` signal is asserted
+
+2. For every clock cycle while `busy`:
+
+   * MSB of `data_reg` is XORed with MSB of `crc_reg`
+   * CRC is updated based on polynomial
+   * Data shifts left
+   * Bit counter increments
+
+3. When all bits are processed:
+
+   * `busy` deasserts
+   * `done` is asserted for one clock cycle
+   * `crc_out` holds final CRC value
+
+---
+
+## 🧠 Internal Signals
+
+* `crc_reg` – CRC shift register
+* `data_reg` – Shifted input data
+* `bit_cnt` – Tracks processed bits
+* `busy` – Indicates CRC calculation in progress
+* `busy_d` – Delayed version of busy (used for edge detection)
+* `feedback` – XOR of MSBs of data and CRC
+
+---
+
+## 🕒 Timing Behavior
+
+* CRC calculation takes **N clock cycles**
+* `done` is asserted for **1 clock cycle**
+* New computation can start after `busy` becomes 0
+
+---
+
+## 🚀 Example Configuration (CRC-8)
+
+```verilog
+parameter N     = 8;
+parameter POLY  = 8'h07;
+parameter INIT  = 8'h00;
+```
+
+This corresponds to a common CRC-8 polynomial.
+
+---
+
+## 📊 Design Notes
+
+* Uses serial architecture (area efficient)
+* Suitable for low-area ASIC/FPGA designs
+* Can be extended for CRC-16, CRC-32 by changing parameters
+* Uses synchronous reset
+* Fully synthesizable
+
+---
+
+## 🛠 How to Simulate
+
+Example using Verilator:
+
+```bash
+verilator --trace --binary crc_calculator_tb.v crc_calculator.v --top crc_calculator_tb
+./obj_dir/Vcrc_calculator_tb
+```
+
+---
+
+## 📚 Future Improvements
+
+* Add parallel CRC version (faster)
+* Add streaming input support
+* Add configurable bit order (MSB/LSB first)
+* Add testbench with random stimulus
+* Add CRC remainder post-processing
+
+---
+
+## 👨‍💻 Author
+
+Vishwa Patwari
+RTL Design & ASIC Frontend Enthusiast
+
+---
+
+
+
+
 
 
