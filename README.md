@@ -484,6 +484,18 @@ parameter ADDR  = 4;
 
 ---
 
+
+## 🛠 How to Simulate
+
+Example using Verilator:
+
+```bash
+verilator --trace --binary async_fifo_tb.v async_fifo.v --top async_fifo_tb
+./obj_dir/Vasync_fifo_tb
+```
+
+---
+
 ## 👨‍💻 Author
 
 Vishwa Patwari
