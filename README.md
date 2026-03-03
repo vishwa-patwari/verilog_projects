@@ -333,7 +333,7 @@ This is a classic CDC (Clock Domain Crossing) safe FIFO architecture used in ASI
 | `DEPTH`   | FIFO depth    | 8       |
 | `ADDR`    | Pointer width | 4       |
 
-> Note: `ADDR` should be `log2(DEPTH) + 1` for correct full detection.
+> Note: `ADDR` should be `clog2(DEPTH) + 1` for correct full detection.
 
 ---
 
